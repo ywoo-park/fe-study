@@ -54,12 +54,15 @@ const [count, setCount] = useState(0);
 ### useEffect (라이프사이클 관리)
 - 함수 컴포넌트 내에서 side effects를 수행할 수 있게 함.
 - side effect ? 데이터 가져오기, 구독(subscription) 설정하기, 수동으로 리액트 컴포넌트의 DOM을 수정
+```javascript
+useEffect(effectFunction);
+```
 - DOM 업데이트 완료 -> React가 effect 함수 호출
 - 첫번째 렌더링과 이후 모든 업데이트(렌더)에서 실행. 모든 렌더링에서 effect는 교체되어 이전 effect와 다름.
 - effect는 clean up 함수를 리턴값으로 가질 수 있다.
     * clean up이 필요하지 않은 경우 = 실행 이후 신경 쓸 것이 없음 (네트워크 리퀘스트, DOM 수동 조작, 로깅 등)
     * clean up이 필요한 경우 = 실행 이후에도 신경 쓸 것이 있음 (외부 데이터에 구독(subscription)을 설정해야 하는 경우 등. 메모리 릭이 나지 않게.)
-    * 컴포넌트 마운트가 해제될 때 clean up을 실행하지만, 이펙트는 모든 렌더링에서 실행되므로 다음 이펙트 실행 전에 이젠 이펙트를 정리해야 함.
+    * 컴포넌트 마운트가 해제될 때 clean up을 실행하지만, 이펙트는 모든 렌더링에서 실행되므로 다음 이펙트 실행 전에 이전 이펙트를 정리해야 함.
 ```javascript
 // clean up (X)
 useEffect(() => { //이렇게 넘겨주는 함수를 "effect"라고 함
@@ -168,6 +171,18 @@ useEffect(() => {
 ### useContext
 - 컴포넌트 간 값을 전달할 때, 복잡하게 여러 단계 거치지 않게 하기 위해 전역으로 값을 사용할 수 있게 하는 것. (Redux와 유사한 기능)
 ```javascript
+// 선언부
+const themes = {
+  light: {
+    foreground: "#000000",
+    background: "#eeeeee"
+  },
+  dark: {
+    foreground: "#ffffff",
+    background: "#222222"
+  }
+};
+
 const ThemeContext = React.createContext(themes.light);
 
 function App() {
@@ -175,6 +190,24 @@ function App() {
     <ThemeContext.Provider value={themes.dark}>
       <Toolbar />
     </ThemeContext.Provider>
+  );
+}
+
+function Toolbar(props) {
+  return (
+    <div>
+      <ThemedButton />
+    </div>
+  );
+}
+
+// 호출부
+function ThemedButton() {
+  const theme = useContext(ThemeContext);
+  return (
+    <button style={{ background: theme.background, color: theme.foreground }}>
+      I am styled by theme context!
+    </button>
   );
 }
 ```
@@ -204,119 +237,11 @@ const [state, dispatch] = useReducer(reducer, initialArg, init);
     * 다음 state가 이전 state에 의존적인 경우
     * 자세한 업데이트를 트리거 하는 컴포넌트의 성능을 최적화 => 콜백 대신 dispatch를 전달 할 수 있기 때문
 
-### useMemo
-- 메모이제이션 된 값을 반환
-- 메모이제이션 = 동일한 계산을 반복해야 할 때, 이전에 계산한 값을 메모리에 저장함으로써 동일한 계산의 반복 수행을 제거하여 프로그램 실행 속도를 빠르게 하는 기술
-- 성능 최적화를 위해 계산된 값을 재사용할 수 있음
-- 공식 문서에서는 성능 최적화로 사용할 수 있지만, 이 정의 그대로 항상 작동할 것이라고 여기지는 말라고 언급
-```javascript
-// 느린 컴포넌트
-function MyComponent({ x, y }) {
-  const z = computeExpensiveValue(x, y)
-  return <div>{z}</div>
-}
-
-// 성능 최적화
-function MyComponent({ x, y }) {
-  const z = useMemo(() => computeExpensiveValue(x, y), [x, y])
-  // useMemo에 전달된 함수는 렌더링 이후 실행되는 effect와 다르게, 렌더링 중 실행됨.
-  // 배열에 있는 값은 useEffect의 두번째 인자와 마찬가지로 메모 함수 재실행의 기준값이다. 이게 변경되면 재계산됨.
-  // 배열이 없는 경우 매 렌더링 때마다 새 값을 계산하게 될 것
-  return <div>{z}</div>
-}
-```
-
-### useCallback
-- 메모이제이션 된 콜백 반환 (함수를 메모이제이션하기)
-- 사용법
-```javascript
-const memoizedCallback = useCallback(
-  () => {
-    doSomething(a, b); //doSomething을
-  },
-  [a, b], //a,b가 변경될 때까지 저장해두고 재사용
-);
-
-const nonMemoizedCallback = () => {
-    doSomething(a, b); 
-} //이렇게 선언되어 있었을 경우, 렌더링 될 때마다 새로운 nonMemoizedCallback가 생성
-```
-- 그런 부분에서 성능 문제가 있을까?
-    * 완전히 같은 로직이어도 다른 변수에 할당되어 있으면 함수도 객체로 취급하기 때문에 다른 함수로 인식함.
-    * 즉, React 컴포넌트 함수 내에서 어떤 함수를 다른 함수의 인자로 넘기거나 자식 컴포넌트의 prop으로 넘길 때 예상치 못한 성능 문제 발생 가능
-```javascript
-// 문제가 생길 수 있는 컴포넌트
-function Profile({ userId }) {
-  const [user, setUser] = useState(null)
-
-  const fetchUser = (userId) =>
-    fetch(`https://your-api.com/users/${userId}`)
-      .then((response) => response.json())
-      .then(({ user }) => user)
-
-  useEffect(() => {
-    fetchUser(userId).then((user) => setUser(user))
-  }, [fetchUser, userId]) //의존 배열에 들어가 있는 함수
-}
-
-// 콜백 메모이제이션으로 의도한 대로 실행하도록 한 컴포넌트
-function Profile({ userId }) {
-  const [user, setUser] = useState(null)
-
-  const fetchUser = useCallback( // 콜백 메모이제이션 (컴포넌트가 리렌더링되어도 참조값 동일)
-    (userId) =>
-      fetch(`https://your-api.com/users/${userId}`)
-        .then((response) => response.json())
-        .then(({ user }) => user),
-    []
-  )
-
-  useEffect(() => {
-    fetchUser(userId).then((user) => setUser(user))
-  }, [fetchUser, userId])
-
-  // ...
-}
-
-// 또 다른 예시: 제어할 스테이트가 많은 경우
-function Light({ room, on, toggle }) {
-  console.log({ room, on })
-  return (
-    <button onClick={toggle}>
-      {room} {on ? "💡" : "⬛"}
-    </button>
-  )
-}
-export default React.memo(Light)
-// React.Memo: 컴포넌트에서 리렌더링이 필요한 상황에서만 리렌더링을 하도록 설정
-
-function SmartHome() {
-  const [masterOn, setMasterOn] = useState(false)
-  const [kitchenOn, setKitchenOn] = useState(false)
-  const [bathOn, setBathOn] = useState(false)
-
-// 이렇게 할 경우, 콘솔에 세 스테이트 모두의 값이 찍힘.
-  const toggleMaster = () => setMasterOn(!masterOn)
-  const toggleKitchen = () => setKitchenOn(!kitchenOn)
-  const toggleBath = () => setBathOn(!bathOn)
-
-// 콜백 메모이제이션으로 변화가 없는 자식 컴포넌트의 불필요한 리렌더링을 막음
-  const toggleMaster = useCallback(() => setMasterOn(!masterOn), [masterOn])
-  const toggleKitchen = useCallback(() => setKitchenOn(!kitchenOn), [kitchenOn])
-  const toggleBath = useCallback(() => setBathOn(!bathOn), [bathOn])
-
-  return (
-    <>
-      <Light room="침실" on={masterOn} toggle={toggleMaster} />
-      <Light room="주방" on={kitchenOn} toggle={toggleKitchen} />
-      <Light room="욕실" on={bathOn} toggle={toggleBath} />
-    </>
-  )
-}
-```
-
 ### useRef
+- 변경 가능한 값을 .current 속성에 담아 ref 객체로 리턴하는 함수
 - ref는 특정 element의 현상을 발생시키는 역할을 함. (ex. input focus 이동, 동영상 재생)
+- 왜? 가변값을 유지하는 데에 더 편리 (pure JS Object)
+- 특징? 값이 변경되어도 이를 알리지 않는다 = .current가 바뀐다고 리렌더링 되지 않는다
 1. 사용예 1: DOM을 직접 선택해야 함
 ```javascript
 const UseRefExample = () => {
@@ -409,6 +334,117 @@ FancyInput = forwardRef(FancyInput);
 <FancyInput ref={inputRef} />
 ```
 
+### useMemo
+- 메모이제이션 된 값을 반환
+- 메모이제이션 = 동일한 계산을 반복해야 할 때, 이전에 계산한 값을 메모리에 저장함으로써 동일한 계산의 반복 수행을 제거하여 프로그램 실행 속도를 빠르게 하는 기술
+- 성능 최적화를 위해 계산된 값을 재사용할 수 있음
+- 공식 문서에서는 성능 최적화로 사용할 수 있지만, 이 정의 그대로 항상 작동할 것이라고 여기지는 말라고 언급
+```javascript
+// 느린 컴포넌트
+function MyComponent({ x, y }) {
+  const z = computeExpensiveValue(x, y)
+  return <div>{z}</div>
+}
+
+// 성능 최적화
+function MyComponent({ x, y }) {
+  const z = useMemo(() => computeExpensiveValue(x, y), [x, y])
+  // useMemo에 전달된 함수는 렌더링 이후 실행되는 effect와 다르게, 렌더링 중 실행됨.
+  // 배열에 있는 값은 useEffect의 두번째 인자와 마찬가지로 메모 함수 재실행의 기준값이다. 이게 변경되면 재계산됨.
+  // 배열이 없는 경우 매 렌더링 때마다 새 값을 계산하게 될 것
+  return <div>{z}</div>
+}
+```
+
+### useCallback
+- 메모이제이션 된 콜백 반환 (함수를 메모이제이션하기)
+- 사용법
+```javascript
+const memoizedCallback = useCallback(
+  () => {
+    doSomething(a, b); //doSomething을
+  },
+  [a, b], //a,b가 변경될 때까지 저장해두고 재사용
+);
+
+const nonMemoizedCallback = () => {
+    doSomething(a, b); 
+} //이렇게 선언되어 있었을 경우, 렌더링 될 때마다 새로운 nonMemoizedCallback가 생성
+```
+- 그런 부분에서 성능 문제가 있을까?
+    * js에서, 완전히 같은 로직이어도 다른 변수에 할당되어 있으면 함수도 객체로 취급하기 때문에 다른 함수로 인식함.
+    * 즉, React 컴포넌트 함수 내에서 어떤 함수를 다른 함수의 인자로 넘기거나 자식 컴포넌트의 prop으로 넘길 때 예상치 못한 성능 문제 발생 가능
+```javascript
+// 문제가 생길 수 있는 컴포넌트
+function Profile({ userId }) {
+  const [user, setUser] = useState(null)
+
+  const fetchUser = (userId) =>
+    fetch(`https://your-api.com/users/${userId}`)
+      .then((response) => response.json())
+      .then(({ user }) => user)
+
+  useEffect(() => {
+    fetchUser(userId).then((user) => setUser(user))
+  }, [fetchUser, userId]) //의존 배열에 들어가 있는 함수
+}
+
+// 콜백 메모이제이션으로 의도한 대로 실행하도록 한 컴포넌트
+function Profile({ userId }) {
+  const [user, setUser] = useState(null)
+
+  const fetchUser = useCallback( // 콜백 메모이제이션 (컴포넌트가 리렌더링되어도 참조값 동일)
+    (userId) =>
+      fetch(`https://your-api.com/users/${userId}`)
+        .then((response) => response.json())
+        .then(({ user }) => user),
+    []
+  )
+
+  useEffect(() => {
+    fetchUser(userId).then((user) => setUser(user))
+  }, [fetchUser, userId])
+
+  // ...
+}
+
+// 또 다른 예시: 제어할 스테이트가 많은 경우
+function Light({ room, on, toggle }) {
+  console.log({ room, on })
+  return (
+    <button onClick={toggle}>
+      {room} {on ? "💡" : "⬛"}
+    </button>
+  )
+}
+export default React.memo(Light)
+// React.Memo: 컴포넌트에서 리렌더링이 필요한 상황에서만 리렌더링을 하도록 설정
+
+function SmartHome() {
+  const [masterOn, setMasterOn] = useState(false)
+  const [kitchenOn, setKitchenOn] = useState(false)
+  const [bathOn, setBathOn] = useState(false)
+
+// 이렇게 할 경우, 콘솔에 세 스테이트 모두의 값이 찍힘.
+  const toggleMaster = () => setMasterOn(!masterOn)
+  const toggleKitchen = () => setKitchenOn(!kitchenOn)
+  const toggleBath = () => setBathOn(!bathOn)
+
+// 콜백 메모이제이션으로 변화가 없는 자식 컴포넌트의 불필요한 리렌더링을 막음
+  const toggleMaster = useCallback(() => setMasterOn(!masterOn), [masterOn])
+  const toggleKitchen = useCallback(() => setKitchenOn(!kitchenOn), [kitchenOn])
+  const toggleBath = useCallback(() => setBathOn(!bathOn), [bathOn])
+
+  return (
+    <>
+      <Light room="침실" on={masterOn} toggle={toggleMaster} />
+      <Light room="주방" on={kitchenOn} toggle={toggleKitchen} />
+      <Light room="욕실" on={bathOn} toggle={toggleBath} />
+    </>
+  )
+}
+```
+
 ### useLayoutEffect
 - 공식 문서에서는 일단 useEffect를 사용할 것을 권함.
 - useEffect와 동일 + 모든 DOM 변경 후에 동기적으로 발생. 
@@ -456,6 +492,7 @@ function FriendListItem(props) {
 }
 ```
 - 컴포넌트 로직을 함수로 뽑아내어 재사용할 수 있음
+- [추천하는 글](https://engineering.linecorp.com/ko/blog/line-securities-frontend-3/)
 - 특징
     * 함수 이름을 use로 시작하도록 짓기
     * 다른 hook을 호출할 수 있음 
