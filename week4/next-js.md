@@ -1,24 +1,33 @@
 # Next.js
 
-> static & server rendering을 지원하는 Production을 위한 React Framework
+>  pre-rendering을 지원하는 Production을 위한 React Framework
+
+* [Client Side Navigation](#client-side-navigation)
+* [Assets, Metadata, CSS](#assets,-metadata,-css)
+* [Pre-rendering](#pre-rendering)
+* [Dynamic Routes](#dynamic-routes)
+* [API Routes](#api-routes)
 
 
-
-### Client-Side Navigation
+## Client Side Navigation
 
 > 기존 브라우저의 naviagation 대신 자바스크립트를 이용해 페이지 전환을 하는 방식
 
-Next.js의 ``Link`` Component는 a tag와 달리 client-side navigation을 지원한다. 
 
-이는 browser가 full refresh를 하는 방식보다 유연한 사용자 경험을 제공한다.
 
-**code-splitting** 
+### Pages
+
+`pages` directory에서 각 page를 생성할 수 있다.
+
+* `pages/index.js`는 `/` route와 매칭된다.
+* `pages/posts/first-post.js`는 `/posts/first-post/` route와 매칭된
+
+### code-splitting
 
 * 한번에 모든 페이지를 불러오는 것이 아닌 특정 페이지에 필요한 코드만 불러오는 기법.
-
 * 빠른 페이지 로딩 속도를 보장해준다. 
 
-**prefetching**
+### prefetching
 
 * ``Link`` component가 브라우저의 viewport 내에 나타나면 Linked page에 대한 코드를 미리 background에서 fetch해온다.
 
@@ -26,15 +35,19 @@ Next.js의 ``Link`` Component는 a tag와 달리 client-side navigation을 지�
 
 
 
-### Assets, Metadata, CSS
 
-**Assets**
+
+## Assets, Metadata, CSS
+
+### Assets
 
 * Next js는 image와 같은 static assets들을 `public` directory에 저장하여 제공한다. 
 
-* `public` directory는 `robots.txt`, Google Site 인증, 다른 static assets들에 유용하다. (SSR의 장점인 SEO 최적화 사용 가능)
+* `public` directory에 정적 콘텐츠를 저장하는 것은  `robots.txt`, Google Site 인증, 다른 static assets들에 유용하다. (SSR의 장점인 SEO 최적화 사용 가능)
 
-**Metadata(Head)**
+
+
+### Metadata(Head)
 
 * Head component를 통해 page별로 html head부분을 작성할 수 있다.
 
@@ -60,55 +73,62 @@ export default function FirstPost() {
 }
 ```
 
-**CSS Styling**
+
+
+### CSS Styling
 
 css in js, css modules 등의 방법이 있다.
 
-* **css in js**
+**css in js**
 
-  styled-jsx 라는 문법을 사용한다.
+* styled-jsx 라는 문법을 사용한다. 혹은 styled component 사용도 가능하다.
 
-  ```jsx
-  <style jsx>{`
-    .container {
-            min-height: 100vh;
-            padding: 0 0.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-          }
-  `}</style>
-  ```
+```jsx
+<style jsx>{`
+  .container {
+          min-height: 100vh;
+          padding: 0 0.5rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+`}</style>
+```
 
-  다음과 같이 component 파일 아래 선언하여 사용한다.
+* 다음과 같이 component 파일 아래 선언하여 사용한다.
 
-* **css modules**
 
-  * css file을 import해와서 쓰는 방법.
 
-  * file name이 `.module.css`로 끝나야 한다.
+**css modules**
 
-  
+* css file을 import 해와서 쓰는 방법.
 
-  ``components/layout.module.css``에 css파일을 작성하고
+* file name이 `.module.css`로 끝나야 한다.
 
-  ``components/layout.js``에서 import해주면 된다.
+``components/layout.module.css``에 css파일을 작성하고
 
-  ```jsx
-  import styles from './layout.module.css'
-  
-  export default function Layout({ children }) {
-    return <div className={styles.container}>{children}</div>
-  }
-  ```
+``components/layout.js``에서 import해주면 된다.
 
-* **global style**
+```jsx
+import styles from './layout.module.css'
 
-  * global css를 작성한다음 pages/_app.js에서 import를 추가하면 된다.
+export default function Layout({ children }) {
+  return <div className={styles.container}>{children}</div>
+}
+```
 
-* **classsnames**
-  * class를 특정 조건에 따라 toggle할 때 용이하다.
+
+
+**global style**
+
+* global css를 작성한다음 pages/_app.js에서 import를 추가하면 된다.
+
+
+
+**classsnames**
+
+* class를 특정 조건에 따라 toggle할 때 용이하다.
 
 ```jsx
 import styles from './alert.module.css'
@@ -127,6 +147,8 @@ export default function Alert({ children, type }) {
   )
 }
 ```
+
+
 
 
 
@@ -186,7 +208,9 @@ page별로 두가지 렌더링 방식 중 선택하여 렌더링을 할 수 있�
 
 > build time에 data를 가져와서 statc generation이 가능하도록 하는 함수
 
-이 페이지는 data dependency가 있으므로 pre-render시에 이 로직을 먼저 실행해라! 라고 Next.js에 알려줌.
+data가 필요한 page에 아래와 같이 getStaticProps()를 써주면 된다.
+
+getStaticProps))이 페이지는 data dependency가 있으므로 pre-render시에 이 로직을 먼저 실행해라! 라고 Next.js에 알려줌.
 
 
 
@@ -221,3 +245,181 @@ export default function Home({allPostsData}) {
 
 
 
+
+
+## Dynamic Routes
+
+> external data에 따라 페이지 경로를 동적으로 설정하여 렌더링
+
+![How to Statically Generate Pages with Dynamic Routes](https://nextjs.org/static/images/learn/dynamic-routes/how-to-dynamic-routes.png)
+
+**1  . pages/posts/[id].js 라는 파일명으로 컴포넌트를 작성**
+
+```jsx
+// pages/posts/[id].js
+
+import Layout from '../../components/layout'
+
+export default function Post() {
+  return <Layout>...</Layout>
+}
+```
+
+
+
+**2-1. lib/posts.js에서 postId들을 가져오는 함수를 작성**
+
+```js
+// lib/posts.js
+
+export function getAllPostIds() { 
+  const fileNames = fs.readdirSync(postsDirectory)
+
+  // Returns an array that looks like this:
+  // [
+  //   {
+  //     params: {
+  //       id: 'ssg-ssr'
+  //     }
+  //   },
+  //   {
+  //     params: {
+  //       id: 'pre-rendering'
+  //     }
+  //   }
+  // ]
+  return fileNames.map(fileName => {
+    return {
+      params: {
+        id: fileName.replace(/\.md$/, '')
+      }
+    }
+  })
+}
+```
+
+
+
+**2-2. getStaticPaths() 함수 작성**
+
+**getStaticPaths** 
+
+params id 에 들어갈 id들을 가져오는 함수.
+
+* development 환경에서 `getStaticPaths`는 매 요청마다 실행
+* production 환경에서는 빌드 타임에 한번 실행
+
+```jsx
+// pages/posts/[id].js
+import { getAllPostIds } from '../../lib/posts'
+
+export async function getStaticPaths() {
+  const paths = getAllPostIds()
+  return {
+    paths,
+    fallback: false
+  }
+}
+```
+
+**fallback**
+
+path가 `getStaticPaths`에 없을 경우 실행에 대한 option
+
+* false : path가 `getStaticPaths`에 없으면 404 page를 리턴
+
+* true : fallback page를 보여주고 background에서 다시 getStaticProps를 요청. 
+
+  * ```
+    if (router.isFallback) {
+        return <Loading />
+    }
+    ```
+
+  * 상품 데이터가 너무 많아서 빌드타임에 한번에 가져오긴 힘들 경우 사용
+
+  * loading indicator를 통해 UX 향상
+
+* blocking : true와 같지만 fallback page(loading indicator)를 보여주지 않는다.
+
+
+
+**3-1. id에 해당하는 postData를 리턴하는 함수 작성**
+
+```js
+// lib/posts.js
+export function getPostData(id) {
+  const fullPath = path.join(postsDirectory, `${id}.md`)
+  const fileContents = fs.readFileSync(fullPath, 'utf8')
+
+  // Use gray-matter to parse the post metadata section
+  const matterResult = matter(fileContents)
+
+  // Combine the data with the id
+  return {
+    id,
+    ...matterResult.data
+  }
+}
+```
+
+
+
+**3-2 . getStaticProps() 작성**
+
+```jsx
+// pages/posts/[id].js
+import { getAllPostIds, getPostData } from '../../lib/posts'
+
+export async function getStaticProps({ params }) {
+  const postData = getPostData(params.id)
+  return {
+    props: {
+      postData
+    }
+  }
+}
+```
+
+
+
+**4 . post component 완성**
+
+```jsx
+// pages/posts/[id].js
+
+export default function Post({ postData }) {
+  return (
+    <Layout>
+      {postData.title}
+      <br />
+      {postData.id}
+      <br />
+      {postData.date}
+    </Layout>
+  )
+}
+```
+
+
+
+
+
+## API Routes
+
+> API 엔드포인트를 node serverless 형태로 제공
+
+`pages/api` directory 안에 handler function을 작성하여 API를 생성할 수 있다.
+
+`pages/api`에 hello.js를 다음과 같이 작성하면
+
+```js
+export default function handler(req, res) {
+  res.status(200).json({ text: "Hello" });
+}
+```
+
+``localhost:3000/api/hello`` 라는 endpoint로 API가 생성된다.
+
+* ``req``는 http.IncomingMessage의 인스턴스. cookie, query, body 등 사용 가능
+* ``res``는 http.ServerResponse의 인스턴스. status, json 등 사용 가능
