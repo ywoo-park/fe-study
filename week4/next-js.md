@@ -428,3 +428,4 @@ export default function handler(req, res) {
 ### Reference
 * https://nextjs.org/learn/basics/create-nextjs-app?utm_source=next-site&utm_medium=nav-cta&utm_campaign=next-website
 * https://blueshw.github.io/2018/04/15/why-nextjs/
+* https://web.dev/route-prefetching-in-nextjs/
