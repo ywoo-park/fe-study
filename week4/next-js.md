@@ -423,3 +423,8 @@ export default function handler(req, res) {
 
 * ``req``는 http.IncomingMessage의 인스턴스. cookie, query, body 등 사용 가능
 * ``res``는 http.ServerResponse의 인스턴스. status, json 등 사용 가능
+
+
+### Reference
+* https://nextjs.org/learn/basics/create-nextjs-app?utm_source=next-site&utm_medium=nav-cta&utm_campaign=next-website
+* https://blueshw.github.io/2018/04/15/why-nextjs/
