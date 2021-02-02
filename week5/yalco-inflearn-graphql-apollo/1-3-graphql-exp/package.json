@@ -1,0 +1,17 @@
+{
+  "name": "1-3-graphql-exp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "nodemon index.js"
+  },
+  "author": "yalco",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.19.0",
+    "convert-csv-to-json": "^1.0.0",
+    "graphql": "^15.4.0"
+  }
+}
