@@ -22,3 +22,9 @@
 - 프로토타입과 클래스 (Javscript) [@shmoon2917](https://github.com/shmoon2917)
 - 브라우저의 동작원리 [@Zinyon](https://github.com/Zinyon)
 - React Hook [@S00ahKim](https://github.com/S00ahKim)
+
+#### 2주차
+
+- FE Intro [@ywoo-park](https://github.com/ywoo-park)
+- 동기/비동기 (Javascript) [@Yoojin-Kim](https://github.com/Yoojin-Kim)
+- Zest [@syndersonLEE](https://github.com/syndersonLEE)
