@@ -6,6 +6,76 @@ gql은 단 하나의 Endpoint가 존재 합니다. 또한, gql API에서는 불�
 
 GraphQL은 API를 위한 쿼리 언어이며 이미 존재하는 데이터로 쿼리를 수행하기 위한 런타임 입니다. GraphQL은 API에 있는 데이터에 대한 완벽하고 이해하기 쉬운 설명을 제공하고 클라이언트에게 필요한 것을 정확하게 요청할 수 있는 기능을 제공하며 시간이 지남에 따라 API를 쉽게 진화시키고 강력한 개발자 도구를 지원합니다.
 
+## GraphQL 과 RESTful 의 차이점
+GraphQL 을 통한 API 는 RESTful API 와는 다른 측면을 보인다.
+GraphQL API 는 주로 하나의 Endpoint 를 사용한다.
+GraphQL API 는 요청할 때 사용한 Query 문에 따라 응답의 구조가 달라진다.
+하나하나 살펴보자.
+
+### API 의 Endpoint
+위에서 말했듯 RESTful API 는 Resource 마다 하나의 Endpoint 를 가지고,
+그 Endpoint 에서 그 Resource 에 대한 (거의) 모든 것을 담당한다.
+반면, GraphQL 은 전체 API 를 위해서 단 하나의 Endpoint 만을 사용한다.
+각각 v3 root endpoint 와 v4 root endpoint 로 Endpoint 를 제공하지만,
+v4 의 경우 Root endpoint 를 제외한 어떤 Endpoint 도 없는 반면,
+v3 의 경우는 각 Resource 마다 수많은 Endpoint 들을 제공한다.
+
+## GraphQL vs RESTful
+이런 차이로 인해 생기는 장단점은 무엇이 있는가?
+
+GraphQL 은 다음과 같은 장점을 가진다.
+
+HTTP 요청의 횟수를 줄일 수 있다.
+RESTful 은 각 Resource 종류 별로 요청을 해야하고, 따라서 요청 횟수가 필요한 Resource 의 종류에 비례한다.
+반면 GraphQL 은 원하는 정보를 하나의 Query 에 모두 담아 요청하는 것이 가능하다.
+HTTP 응답의 Size 를 줄일 수 있다.
+RESTful 은 응답의 형태가 정해져있고, 따라서 필요한 정보만 부분적으로 요청하는 것이 힘들다.
+반면 GraphQL 은 원하는 대로 정보를 요청하는 것이 가능하다.
+두 장점을 예시를 통해 알아보자.
+우리가 글의 목록과 각 글에 쓰인 댓글의 목록을 가져올 수 있는 API 가 있다고 해보자.
+이 API 가 RESTful 하게 작성되었다면 글과 댓글의 목록을 가져오기 위해서 다음 중 한 가지 방법을 선택해야 할 것이다.
+
+글의 목록을 가져오는 Endpoint 와 댓글의 목록을 가져오는 Endpoint 에 각각 요청을 여러 번 한다.
+글이 5 개 있다고 해보자.
+이 경우에는 글의 목록을 가져오는 Endpoint 에 요청을 하고,
+각 글마다 댓글의 목록을 가져오는 Endpoint 에 요청을 5 번 해야 글과 댓글의 목록을 모두 가져올 수 있을 것이다. (1. 장점)
+글의 목록을 가져오는 Endpoint 의 응답에 댓글의 목록을 포함한다.
+글이 5 개 있다고 해보자.
+이 경우에는 글의 목록을 가져오는 Endpoint 에 요청을 1 번 하면 끝이지만,
+글의 목록만 가져와야 하는 경우나 몇몇 글의 댓글만 가져와야 하는 경우가 있다면
+필요한 정보에 비해서 응답의 크기가 쓸데없이 큰 경우가 발생할 것이다. (2. 장점)
+글의 목록을 가져오는 요청에 조건을 달아서 댓글의 목록을 포함할 수도, 포함하지 않을 수도 있게 한다.
+API 에 Endpoint 가 많을 경우, API 를 만드는 것이 점점 더 복잡해지고,
+결국 Facebook 에서 GraphQL 을 만든 이유와 비슷한 상황에 처하게 된다.
+반면 같은 API 를 GraphQL 로 작성하였다면
+
+글의 목록만을 가져와야 할 경우에는 글의 목록만을 가져오는 Query 를 작성하여 서버에 요청을 보낸다.
+글의 목록과 댓글을 모두 가져와야 할 경우에는 글의 목록과 댓글을 모두 가져오는 Query 를 작성하여 서버에 요청을 보낸다.
+등을 할 수 있다.
+
+그렇다면 GraphQL 은 장점만 가지는가? 물론 단점도 있다.
+GraphQL 은 다음과 같은 단점을 가진다.
+
+File 전송 등 Text 만으로 하기 힘든 내용들을 처리하기 복잡하다.
+고정된 요청과 응답만 필요할 경우에는 Query 로 인해 요청의 크기가 RESTful API 의 경우보다 더 커진다.
+재귀적인 Query 가 불가능하다. (결과에 따라 응답의 깊이가 얼마든지 깊어질 수 있는 API 를 만들 수 없다.)
+물론 GraphQL 에서 File 전송을 할 수 없는 것은 아니나,
+일반적인 GraphQL API 에 비해서 복잡해지거나 외부의 Service 에 의존해야하는 등 문제가 발생한다.
+
+## GraphQL or RESTful?
+그렇다면 GraphQL 과 RESTful 중 어떤 것을 선택해서 사용해야하는가?
+다음과 같은 기준으로 선택하면 될 것이다.
+
+### GraphQL
+서로 다른 모양의 다양한 요청들에 대해 응답할 수 있어야 할 때
+대부분의 요청이 CRUD(Create-Read-Update-Delete) 에 해당할 때
+### RESTful
+HTTP 와 HTTPs 에 의한 Caching 을 잘 사용하고 싶을 때
+File 전송 등 단순한 Text 로 처리되지 않는 요청들이 있을 때
+요청의 구조가 정해져 있을 때
+
+출처 : https://www.holaxprogramming.com/2018/01/20/graphql-vs-restful-api/
+
 ![GQ1](http://tech.kakao.com/files/graphql-stack.png)
 
 ![GQ2](http://tech.kakao.com/files/graphql-mobile-api.png)
