@@ -28,3 +28,18 @@
 - FE Intro [@ywoo-park](https://github.com/ywoo-park)
 - 동기/비동기 (Javascript) [@Yoojin-Kim](https://github.com/Yoojin-Kim)
 - Zest [@syndersonLEE](https://github.com/syndersonLEE)
+
+#### 3주차
+
+- CORS/HTTPS [@syndersonLEE](https://github.com/syndersonLEE)
+- Typescript [@shmoon2917](https://github.com/shmoon2917) [@ywoo-park](https://github.com/ywoo-park)
+
+#### 4주차
+
+- CSR/SSR [@S00ahKim](https://github.com/S00ahKim)
+- Next.js [@Zinyon](https://github.com/Zinyon)
+
+#### 5주차
+
+- GraphQL [@S00ahKim](https://github.com/S00ahKim)
+- 웹 상태 저장 기술(쿠키,세션,JWT,웹캐시) [@ywoo-park](https://github.com/ywoo-park)
