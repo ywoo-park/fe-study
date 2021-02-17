@@ -16,6 +16,22 @@
 - 상태 업데이트 로직이 복잡할 때
 - 어플리케이션 코드 규모가 크고, 많은 사람들이 참여할 때
 
+### redux vs context API
+**context API**
+- 3rd party library가 필요없어 bundle을 조금이나마 줄일 수 있다.
+- 코드가 상대적으로 간결
+- 잦은 업데이트 따른 최적화가 어렵다. (상태 변경에 따른 모든 컴포넌트를 리렌더링)
+
+**redux**
+- 부가적인 라이브러리가 필요하다.
+- 코드가 길어진다.
+- 잦은 업데이트에 최적화되어 있다. (업데이트된 컴포넌트만 리렌더링)
+- 디버깅, 테스트가 용이
+
+관리해야 하는 상태규모가 작고, 빠른 개발을 필요로 하며, 업데이트가 많지 않은 경우에는 context API를 사용.
+
+업데이트가 많이 되고 관리해야 하는 상태규모가 큰 경우에는 redux를 사용.
+
 ### Redux 라이브러리와 툴들
 
 **react-redux**
@@ -51,3 +67,5 @@ redux-thunk 다음으로 가장 많이 사용되는 라이브러리.
 ### Reference
 * https://redux.js.org/tutorials/essentials/part-1-overview-concepts
 * https://react.vlpt.us/redux/
+* https://academind.com/tutorials/reactjs-redux-vs-context-api/
+* https://www.codehousegroup.com/insight-and-inspiration/tech-stream/using-redux-and-context-api#:~:text=Context%20API%20is%20easy%20to,creating%20unnecessary%20work%20and%20complexity.
