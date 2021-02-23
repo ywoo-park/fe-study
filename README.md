@@ -1,5 +1,6 @@
 # fe-study
-> FE 온라인 스터디 
+
+> FE 온라인 스터디
 
 ### 참여자
 
@@ -43,3 +44,11 @@
 
 - GraphQL [@S00ahKim](https://github.com/S00ahKim)
 - 웹 상태 저장 기술(쿠키,세션,JWT,웹캐시) [@ywoo-park](https://github.com/ywoo-park)
+
+#### 6주차
+
+- Redux [@Zinyon](https://github.com/Zinyon) [@shmoon2917](https://github.com/shmoon2917)
+
+#### 7주차
+
+- Redux Middlewares [@shmoon2917](https://github.com/shmoon2917)
