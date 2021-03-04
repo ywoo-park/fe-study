@@ -6,6 +6,15 @@
 
 ![Redux](https://miro.medium.com/max/616/1*ecPyts0f-9FI67b1VAYKVQ.jpeg)
 
+[React 개발자의 숙명](https://repo.yona.io/doortts/blog/post/297)
+
+```
+리덕스의 개념을 설명하는데 Data Flow Diagram이 자주 등장 합니다. Action, Reducer, Dispatcher, Store, View 이런 개념들은 사실 State를 렌더링 하고 변경하기 위한 어떤 메소드 즉 서비스 같은 것을 가져다 그냥 사용하는 것 뿐인 데 개념을 장황하게 설명합니다. 그리고 그것들이 상호 작용하기 위해서 추가 해주는 보일러플레이트 코들이 매 Component마다 추가 해주어야합니다. 컴포넌트와 리덕스를 연결하기위해서 mapStateToProps, mapDispatchToProps 함수를 사용하고 Action을 정의 하고.. 등등 Javascript의 높은 문법 자유도 때문에 예제 코드들의 선언 방식 또한 자유 분방합니다. 바로 이런 것들이 React가 다소 어렵다라는 인식을 주게되는 하나의 요인 같댜는 생각이 개인적으로 들기도 합니다.  
+
+출처 : 우아한 형제 블로그
+```
+
+
 ### MobX
 
 --------------------
@@ -88,8 +97,10 @@ computed values(계산된 값)는 다른 observable들에서 어떠한 정보를
 
 ![Mobx - Redux](https://woowabros.github.io/img/2019-01-02/mobx-redux-layer.png)
 
- > 우아한 형제 블로그 예시  
+ > 우아한 형제 어드민 예시  
  ![Atomic Design](https://woowabros.github.io/img/2019-01-02/atomic-design.png)
+ ![Architecture](https://woowabros.github.io/img/2019-01-02/atomic-design-folder.png)
+
 
 
 
