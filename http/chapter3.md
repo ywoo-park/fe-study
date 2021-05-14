@@ -38,7 +38,7 @@
             <Header>
             <Body>
 
-40        - Version
+        - Version
 
             HTTP의 버전을 뜻함
         
