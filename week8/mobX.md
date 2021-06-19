@@ -89,6 +89,14 @@ computed values(계산된 값)는 다른 observable들에서 어떠한 정보를
 
 - 하나의 스토어 안에는 여러개의 domain objects가 있을 수 있다. 그리고 domain objects안에서 간단하게 state를 모델링할 수 있다.
 
+
+## 프로젝트 세팅  
+
+```
+$ yarn create react-app mobx-playground --template typescript
+$ cd mobx-playground
+```
+
 ## 장점
 
  - Spring Framework 와 유사한 아키텍쳐 사용 가능
