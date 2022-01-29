@@ -66,3 +66,52 @@ writelock획득() = write true 혹은 readCount > 0 이면 대기 or isWriting =
 writelock해제() = isWriting = false 후 notifyAll()
 ```
 
+- Dining-Philosophers Problem
+    - 다섯 개의 철학자가 다섯 개의 젓가락을 동시에 잡으려고 하는 문제
+    - 젓가락에 mutal exclusion을 적용해서 해결 하면 되지만, 여러 리소스에 대해서 여러 프로세스가 있는 경우는?
+        - Deadlock이 발생 starvation이 발생
+    - Semaphore를 사용해서 해결
+        - mutal exclusion은 해결 가능
+        - 젓가락 마다 semaphore을 할당
+
+- deadlock & starvation
+    - 다섯명의 철학자가 동시에 다섯개의 젓가락을 잡게 된다면?
+        - Deadlock에 걸림
+
+- Deadlock 해결 방법
+    - 한 개는 강제로 제한
+    - 양쪽 젓가락이 available할 때만 가능할 때만 사용
+    - 조건을 주어 짝수 인원은 왼쪽 -> 오른쪽, 홀수 인원은 오른쪽 -> 왼쪽
+    - 위 방법은 starvation은 해결이 불가능
+        - starvation이 발생하면 탐지를 해서 제거하는 방식으로
+
+- 양쪽의 젓가락이 available = Monitor Solution
+    - 상태를 생각, 배고픔, 먹는 상태
+    - 양쪽 철학자가 먹는 상태가 아닐때만 사용 가능
+    - hungry할때 delay하고 다 먹으면 signal()
+
+- Dining-Philosophers Problem 해결법
+    - 젓가락 분배를 통해 해결
+    - 모니터를 통해 조절
+    - pickup(), putdown()을 통해서 해당 이슈를 조절
+    -  mutual exclusion 및 deadlock은 방지
+    - 그러나 starvation은 못막음
+
+```
+monitor DiningPhilosophers
+
+pickup(), putdown(), test()을 선언
+pickup() = 상태를 Hungry로 바꾸고 test를 호출 -> state가 Eating이면 대기
+putdown() = 상태를 대기로 바꾸고 test 양 옆자리를 호출
+test() = 양쪽이 eating이 아니면 나도 eating 가능을 signal
+
+think() -> pickup(위치) -> eat() -> pickup(위치) 순서로 실행
+
+```
+
+- Thread-Safe Concurrent Applications
+    - 경쟁 상태와 liveness hazards의 문제는 남아 있음
+    - thread-safe 하도록 구현 해야함
+        1. Transactional Memory = atomic operation
+        2. OpenMP -> Parrellel하도록 진행하되 Critical Section을 막음
+        3. 함수형 명령어를 쓰면 문제가 안 생김 - 기존에는 명령형 언어라 문제
