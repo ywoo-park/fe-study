@@ -101,8 +101,8 @@ writelock해제() = isWriting = false 후 notifyAll()
 monitor DiningPhilosophers
 
 pickup(), putdown(), test()을 선언
-pickup() = 상태를 Hungry로 바꾸고 test를 호출 -> state가 Eating이면 대기
-putdown() = 상태를 대기로 바꾸고 test 양 옆자리를 호출
+pickup() = 락을 걸고 상태를 Hungry로 바꾸고 test를 호출 -> state가 Eating이면 대기 -> 끝나면 락 해제
+putdown() = 락을 걸고 상태를 대기로 바꾸고 test 양 옆자리를 호출 -> 끝나면 락 해제
 test() = 양쪽이 eating이 아니면 나도 eating 가능을 signal
 
 think() -> pickup(위치) -> eat() -> pickup(위치) 순서로 실행
