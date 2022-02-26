@@ -174,4 +174,5 @@ Need Vector가 Work 인스턴스 모두 보다 같거나 커야 할당 가능
 - 매번 detection을 돌리면 Overhead가 큼
     - 프로세스 스레드를 하나만 죽여줘도 된다
 - 희생양을 선정
-    - 
+    - Rollback 진행
+    - 하나만 걸려서 Starvation 발생가능 - victim count로 조절
